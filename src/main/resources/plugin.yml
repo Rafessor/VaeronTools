@@ -3,16 +3,4 @@ version: _VERSION_
 author: Schuwi
 
 main: me.schuwi.vtools.VaeronTools
-depend: [WorldEdit]
-
-commands:
-  vaeSweep:
-    usage: /vaeSweep
-  vaeTexture:
-    usage: /vaeTexture
-  vaeCheck:
-    usage: /vaeCheck
-  vaeTrees:
-    usage: /vaeTrees
-  vaeImg:
-    usage: /vaeImg
+depend: [FastAsyncWorldEdit]

@@ -6,7 +6,7 @@
 
     <groupId>me.schuwi</groupId>
     <artifactId>VaeronTools</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
 
     <repositories>
         <repository>
@@ -16,6 +16,22 @@
         <repository>
             <id>sk89q-snapshots</id>
             <url>http://maven.sk89q.com/artifactory/repo</url>
+        </repository>
+        <repository>
+            <id>fawe-repo</id>
+            <url>http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn</url>
+        </repository>
+        <repository>
+            <id>plotsquared</id>
+            <url>http://ci.athion.net/job/PlotSquared/ws/mvn/</url>
+        </repository>
+        <repository>
+            <id>aikar</id>
+            <url>http://ci.emc.gs/nexus/content/groups/aikar/</url>
+        </repository>
+        <repository>
+            <id>primesoft</id>
+            <url>http://empcraft.com/maven2</url>
         </repository>
     </repositories>
 
@@ -35,7 +51,7 @@
             <scope>provided</scope>
         </dependency>
         <!--WorldEdit-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
             <version>6.1.5</version>
@@ -45,6 +61,13 @@
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-core</artifactId>
             <version>6.1.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>-->
+        <!--FAWE-->
+        <dependency>
+            <groupId>com.boydti</groupId>
+            <artifactId>fawe-api</artifactId>
+            <version>latest</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

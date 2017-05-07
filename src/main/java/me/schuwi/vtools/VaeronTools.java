@@ -1,5 +1,6 @@
 package me.schuwi.vtools;
 
+import com.boydti.fawe.FaweAPI;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -10,6 +11,6 @@ public class VaeronTools extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getCommand("vaeSweep").setExecutor(new SweepCommand());
+        FaweAPI.registerCommands(new SweepCommand());
     }
 }
