@@ -1,6 +1,7 @@
 package me.schuwi.vtools;
 
 import com.boydti.fawe.FaweAPI;
+import me.schuwi.vtools.sweep.SweepCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**

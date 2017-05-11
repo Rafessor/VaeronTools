@@ -19,7 +19,7 @@
 
 // $Id$
 
-package me.schuwi.vtools;
+package me.schuwi.vtools.sweep;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
