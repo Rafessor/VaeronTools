@@ -5,53 +5,38 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
-import com.sk89q.worldedit.math.transform.AffineTransform;
-import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.session.ClipboardHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a spline used by the {@link SweepCommand}.<br>
+ * Embodies an abstract implementation for pasting structures along a spline.<br>
  * A curve is being interpolated by the provided {@link Interpolation} implementation
- * and the provided {@link Clipboard} is pasted along this curve.
+ * and the structure is pasted along this curve by the specific Spline implementation.
  * @author Schuwi
  * @version 1.0
  */
-public class Spline {
+public abstract class Spline {
 
     private Vector2D direction = new Vector2D(1, 0);
     private final int nodeCount;
 
-    private EditSession editSession;
-    private ClipboardHolder clipboardHolder;
+    protected EditSession editSession;
     private Interpolation interpolation;
 
     private List<Section> sections;
     private double splineLength;
 
-    private Vector originalOrigin;
-    private Transform originalTransform;
-
-    private Vector center;
-    private Vector centerOffset;
-
     /**
      * Constructor without position-correction. Use this constructor for an interpolation implementation which does not need position-correction.
      * <p>
      * Be advised that currently subsequent changes to the interpolation parameters may not be supported.
-     * @param editSession     The EditSession which will be used when pasting the clipboard content
-     * @param clipboardHolder The clipboard that will be pasted along the spline
+     * @param editSession     The EditSession which will be used when pasting the structure
      * @param interpolation   An implementation of the interpolation algorithm used to calculate the curve
      */
-    public Spline(EditSession editSession, ClipboardHolder clipboardHolder, Interpolation interpolation) {
-        this(editSession, clipboardHolder, interpolation, -1);
+    protected Spline(EditSession editSession, Interpolation interpolation) {
+        this(editSession, interpolation, -1);
     }
 
     /**
@@ -67,14 +52,12 @@ public class Spline {
      * 0.25 * 40 = 10 units of curve length between these two positions.
      * <p>
      * Be advised that currently subsequent changes to the interpolation parameters may not be supported.
-     * @param editSession     The EditSession which will be used when pasting the clipboard content
-     * @param clipboardHolder The clipboard that will be pasted along the spline
+     * @param editSession     The EditSession which will be used when pasting the structure
      * @param interpolation   An implementation of the interpolation algorithm used to calculate the curve
      * @param nodeCount       The number of nodes provided to the interpolation object
      */
-    public Spline(EditSession editSession, ClipboardHolder clipboardHolder, Interpolation interpolation, int nodeCount) {
+    protected Spline(EditSession editSession, Interpolation interpolation, int nodeCount) {
         this.editSession = editSession;
-        this.clipboardHolder = clipboardHolder;
         this.interpolation = interpolation;
         this.nodeCount = nodeCount;
 
@@ -82,18 +65,10 @@ public class Spline {
         if (nodeCount > 2) {
             initSections();
         }
-        this.originalTransform = clipboardHolder.getTransform();
-
-        Clipboard clipboard = clipboardHolder.getClipboard();
-        this.originalOrigin = clipboard.getOrigin();
-
-        center = clipboard.getRegion().getCenter();
-        this.centerOffset = center.subtract(center.round());
-        this.center = center.subtract(centerOffset);
     }
 
     /**
-     * Set the forward direction of the clipboard content.<br>
+     * Set the forward direction of the structure.<br>
      * This direction is used to determine the rotation of the clipboard to align to the curve. The horizontal slope
      * of the curve for a specific point is calculated by {@link Interpolation#get1stDerivative(double)}.
      * Subsequently this angle between this vector and the gradient vector is calculated and the clipboard content
@@ -107,7 +82,7 @@ public class Spline {
     }
 
     /**
-     * Get the forward direction of the clipboard content.<br>
+     * Get the forward direction of the structure.<br>
      * This direction is used to determine the rotation of the clipboard to align to the curve. The horizontal slope
      * of the curve for a specific point is calculated by {@link Interpolation#get1stDerivative(double)}.
      * Subsequently this angle between this vector and the gradient vector is calculated and the clipboard content
@@ -121,7 +96,7 @@ public class Spline {
     }
 
     /**
-     * Paste the clipboard content at the provided position on the curve. The position will be position-corrected if the
+     * Paste the structure at the provided position on the curve. The position will be position-corrected if the
      * nodeCount provided to the constructor is bigger than 2.
      * @param position The position on the curve. Must be between 0.0 and 1.0 (both inclusive)
      * @return         The amount of blocks that have been changed
@@ -139,7 +114,7 @@ public class Spline {
     }
 
     /**
-     * Paste the clipboard content at the provided position on the curve. The position will not be position-corrected
+     * Paste structure at the provided position on the curve. The position will not be position-corrected
      * but will be passed directly to the interpolation algorithm.
      * @param position The position on the curve. Must be between 0.0 and 1.0 (both inclusive)
      * @return         The amount of blocks that have been changed
@@ -162,32 +137,10 @@ public class Spline {
                 Math.atan2(direction.getZ(), direction.getX()) - Math.atan2(deriv2D.getZ(), deriv2D.getX())
         );
 
-        AffineTransform transform = new OffsetRoundTransform(
-                new AffineTransform()
-                        .translate(offset)
-                        .rotateY(angle)
-                        .coefficients())
-                .preOffset(centerOffset);
-
-        // Pasting
-
-        Clipboard clipboard = clipboardHolder.getClipboard();
-        clipboard.setOrigin(center);
-        clipboardHolder.setTransform(originalTransform.combine(transform));
-
-        Operation operation = clipboardHolder
-                .createPaste(editSession, editSession.getWorld().getWorldData())
-                .to(target)
-                .ignoreAirBlocks(true)
-                .build();
-        Operations.completeLegacy(operation);
-
-        // Cleanup
-        clipboardHolder.setTransform(originalTransform);
-        clipboard.setOrigin(originalOrigin);
-
-        return ((ForwardExtentCopy)operation).getAffected();
+        return pasteBlocks(target, offset, angle);
     }
+
+    protected abstract int pasteBlocks(Vector target, Vector offset, double angle) throws MaxChangedBlocksException;
 
     private void initSections() {
         int sectionCount = nodeCount - 1;

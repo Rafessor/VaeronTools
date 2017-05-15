@@ -49,7 +49,7 @@ public class SweepCommand {
             }).collect(Collectors.toList());
             interpol.setNodes(nodes);
 
-            Spline spline = new Spline(editSession, session.getClipboard(), interpol, nodes.size());
+            ClipboardSpline spline = new ClipboardSpline(editSession, session.getClipboard(), interpol, nodes.size());
 
             int affected = 0;
             try {
@@ -66,12 +66,13 @@ public class SweepCommand {
                     }
                 }
             } catch (MaxChangedBlocksException e) {
-                player.print("Maximum number of block changes reached");
+                player.print("Maximum number of block changes reached.");
             }
 
             BBC.OPERATION.send(player, affected);
         } catch (IncompleteRegionException | EmptyClipboardException | ClassCastException ignored) {
-            player.print("You have to make a convex polyhedral selection and copy a region before using this command");
+            player.print("You have to make a convex polyhedral selection and copy a region before using this command.");
+            player.print("Tip: You can switch to convex selection mode with //sel convex.");
         }
     }
 }

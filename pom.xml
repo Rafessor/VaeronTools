@@ -6,7 +6,7 @@
 
     <groupId>me.schuwi</groupId>
     <artifactId>VaeronTools</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 
     <repositories>
         <repository>
@@ -50,6 +50,19 @@
             <version>1.11.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!--FAWE-->
+        <dependency>
+            <groupId>com.boydti</groupId>
+            <artifactId>fawe-api</artifactId>
+            <version>latest</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sk89q</groupId>
+                    <artifactId>worldedit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!--WorldEdit-->
         <!--<dependency>
             <groupId>com.sk89q.worldedit</groupId>
@@ -63,13 +76,6 @@
             <version>6.1.4-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>-->
-        <!--FAWE-->
-        <dependency>
-            <groupId>com.boydti</groupId>
-            <artifactId>fawe-api</artifactId>
-            <version>latest</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>gov.nist.math</groupId>
             <artifactId>jama</artifactId>
