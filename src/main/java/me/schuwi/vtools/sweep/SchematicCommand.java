@@ -113,7 +113,18 @@ public class SchematicCommand {
         WorldEdit worldEdit = WorldEdit.getInstance();
 
         File working = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
-        File dir = Settings.IMP.PATHS.PER_PLAYER_SCHEMATICS ? new File(working, player.getUniqueId().toString()) : working;
+
+        Set<Schematic> schematics = new HashSet<>();
+        if (Settings.IMP.PATHS.PER_PLAYER_SCHEMATICS) {
+            File dir = new File(working, player.getUniqueId().toString());
+            schematics.addAll(loadSchematicsFolder(dir, prefix, player, format));
+        }
+        schematics.addAll(loadSchematicsFolder(working, prefix, player, format));
+        return schematics.toArray(new Schematic[schematics.size()]);
+    }
+
+    private Set<Schematic> loadSchematicsFolder(File dir, String prefix, Player player, ClipboardFormat format) {
+        WorldEdit worldEdit = WorldEdit.getInstance();
 
         if (dir.isDirectory()) {
             String[] files = dir.list((f, n) -> n.toLowerCase().startsWith(prefix) && n.toLowerCase().endsWith("." + format.getExtension()));
@@ -137,9 +148,9 @@ public class SchematicCommand {
                     player.print("Warning: Failed to load " + failed + " file(s).");
                 }
 
-                return schematics.toArray(new Schematic[schematics.size()]);
+                return schematics;
             }
         }
-        return null;
+        return Collections.EMPTY_SET;
     }
 }
